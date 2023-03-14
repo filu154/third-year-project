@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
+import scipy.stats
 import sklearn
 import tensorflow
 from tensorflow import keras
 from keras import datasets, layers, models
 
 pd.set_option('display.max_rows', None)
-df = pd.read_csv('../data/100720.csv', nrows=10000, index_col='id')
+df = pd.read_csv('../data/100720.csv', index_col='id')
 df1 = df[['target_sequence', 'grna_target_sequence', 'cleavage_freq']].copy()
 
 # Delete entries that do not have 23 nt
@@ -65,14 +66,14 @@ input_shape = (23, 6, 1)
 
 model = models.Sequential()
 
-model.add(layers.Conv2D(filters=25, kernel_size=(5, 6), padding='valid', activation='relu',
+model.add(layers.Conv2D(filters=40, kernel_size=(4, 6), padding='valid', activation='relu',
                         kernel_initializer=kernel_init,
                         bias_initializer=bias_init,
                         input_shape=input_shape))
 model.add(layers.BatchNormalization())
-model.add(layers.MaxPooling2D(pool_size=(5,1)))
+model.add(layers.MaxPooling2D(pool_size=(2,1)))
 model.add(layers.Flatten())
-model.add(layers.Dense(units=256, activation='relu',
+model.add(layers.Dense(units=125, activation='relu',
                        kernel_initializer=kernel_init,
                        bias_initializer=bias_init))
 model.add(layers.Dense(units=23, activation='relu',
@@ -81,10 +82,8 @@ model.add(layers.Dense(units=23, activation='relu',
 model.add(layers.Dropout(0.2))
 model.add(layers.Dense(units=1, activation='sigmoid'))
 
+
 # model.summary()
-# for i in range(0, len(X_train)):
-#     if len(X_train[i]) != 23:
-#         print(i, X_train[i])
 
 X_train = keras.backend.expand_dims(X_train)
 X_test = keras.backend.expand_dims(X_test)
@@ -92,7 +91,11 @@ X_test = keras.backend.expand_dims(X_test)
 model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-4), loss=keras.losses.BinaryCrossentropy(), metrics='mae')
 model.fit(X_train, y_train, batch_size=64, epochs=10, validation_split=0.1)
 
-model.evaluate(X_test, y_test)
+predicts = model.predict(X_test)
+print(scipy.stats.spearmanr(y_test, predicts))
+
+# model.evaluate(X_test, y_test)
+
 # model.save('Saved Models/model1')
 
 # test_model = keras.models.load_model('Saved Models/model1')
