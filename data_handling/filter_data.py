@@ -8,7 +8,7 @@ def filter_fixed_length(data_path, new_file_path):
     df = df[df['grna_target_sequence'].apply(lambda x: len(x)==23)]
     df = df[df['cleavage_freq'].apply(lambda x: not pd.isnull(x))]
 
-    df.to_csv(path_or_buf=new_file_path, index=False)
+    df.to_csv(path_or_buf=new_file_path)
 
 
 filter_fixed_length('../data/100720.csv', '../data/fixed_length_23.csv')
