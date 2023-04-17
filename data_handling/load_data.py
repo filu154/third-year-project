@@ -1,7 +1,7 @@
 import pandas as pd
 import sklearn
-from data_encodings import ohe_direction
 from tensorflow import keras
+
 
 def load_data(data_path):
     df = pd.read_csv(data_path, index_col='id')
@@ -11,7 +11,10 @@ def load_data(data_path):
     df.reset_index(inplace=True, drop=True)
 
     # get data and labels
-    x_data = ohe_direction.encode(df)
+    x_data = {
+        'target_sequence': df['target_sequence'],
+        'grna_target_sequence': df['grna_target_sequence']
+    }
     y_data = df['cleavage_freq']
 
     return x_data, y_data
@@ -26,4 +29,4 @@ def split_train_test(x_data, y_data):
     X_train = keras.backend.expand_dims(X_train)
     X_test = keras.backend.expand_dims(X_test)
 
-    return (X_train, y_train, X_test, y_test)
+    return X_train, y_train, X_test, y_test
