@@ -27,8 +27,8 @@ def add_direction_mismatch(dna_nt, grna_nt):
     return np.append(res, [0, 0])
 
 
-def encode(df):
-    target_sequences, grna_target_sequences = df['target_sequence'], df['grna_target_sequence']
+def encode(dict):
+    target_sequences, grna_target_sequences = dict['target_sequence'], dict['grna_target_sequence']
 
     ohe_target_sequences = map(lambda x: one_hot_encoding(x), target_sequences)
     ohe_grna_target_sequences = map(lambda x: one_hot_encoding(x), grna_target_sequences)
