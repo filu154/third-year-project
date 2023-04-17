@@ -1,7 +1,6 @@
-import tensorflow
+import scipy
 from tensorflow import keras
-from data_encodings import ohe_direction
-from keras import datasets, layers, models
+from keras import layers, models
 
 
 class Model1():
@@ -50,3 +49,7 @@ class Model1():
 
     def predict(self, X_test):
         return self.model.predict(X_test)
+
+    def get_metrics(self, X_test, y_test):
+        predictions = self.predict(X_test)
+        print(scipy.stats.spearmanr(y_test, predictions))
